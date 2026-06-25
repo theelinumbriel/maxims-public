@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>maxims</title>
+    <meta name="description" content="a quiet place for the words you want to keep — pinterest, but for words." />
+    <meta name="theme-color" content="#fbfaf7" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="masthead">
+      <div class="title-wrap">
+        <h1 class="wordmark">maxims</h1>
+        <p class="tagline">a quiet place for the words you want to keep.</p>
+      </div>
+    </header>
+
+    <!-- compose -->
+    <section class="composer" aria-label="add a maxim">
+      <textarea
+        id="quote"
+        class="compose-quote"
+        rows="1"
+        placeholder="write or paste a maxim…"
+        autocomplete="off"
+      ></textarea>
+      <div class="compose-foot">
+        <input id="author" class="compose-author" placeholder="— who said it (optional)" autocomplete="off" />
+        <button id="keep" class="keep" type="button" disabled>keep</button>
+      </div>
+    </section>
+
+    <!-- boards / filter -->
+    <nav class="boards" id="boards" aria-label="boards"></nav>
+
+    <!-- the wall -->
+    <main id="wall" class="wall" aria-live="polite"></main>
+
+    <p class="sandbox-note">a sandbox — no account, nothing sent anywhere. everything stays in this browser.</p>
+
+    <!-- board popover (single, reused) -->
+    <div class="popover" id="popover" hidden role="menu" aria-label="save to a board"></div>
+
+    <!-- card template -->
+    <template id="card-tpl">
+      <article class="card">
+        <blockquote class="q"></blockquote>
+        <footer class="card-foot">
+          <span class="author"></span>
+          <span class="acts">
+            <button class="act act-board" type="button" title="save to a board">save</button>
+            <button class="act act-copy" type="button" title="copy">copy</button>
+            <button class="act act-del" type="button" title="remove" aria-label="remove">remove</button>
+          </span>
+        </footer>
+      </article>
+    </template>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
