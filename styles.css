@@ -1,18 +1,19 @@
-/* maxims — a quiet place for words.
-   restraint is the whole point: warm paper, one serif for the words, one sans
-   for the furniture, and almost nothing else. */
+/* maxims — a typed commonplace book.
+   no titles, no chrome: you arrive straight at the page and start typing.
+   everything is set in a worn typewriter face on grained paper; the wall reads
+   like a stack of individually typed slips. restraint over decoration. */
 
 :root {
-  --paper: #fbfaf7;
-  --paper-2: #ffffff;
-  --ink: #1c1a16;
-  --muted: #9b948a;
-  --faint: #c7c1b6;
-  --line: rgba(28, 26, 22, 0.1);
-  --line-2: rgba(28, 26, 22, 0.16);
-  --shadow: 0 1px 2px rgba(28, 26, 22, 0.04), 0 8px 24px rgba(28, 26, 22, 0.06);
-  --serif: "Newsreader", Georgia, "Times New Roman", serif;
-  --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --paper: #f4f0e6;
+  --paper-2: #fbf9f2;
+  --ink: #2a2620;
+  --ink-soft: rgba(42, 38, 32, 0.62);
+  --muted: #8d8676;
+  --faint: #b6af9f;
+  --line: rgba(42, 38, 32, 0.16);
+  --line-2: rgba(42, 38, 32, 0.28);
+  --type: "Special Elite", "Courier Prime", "Courier New", monospace;
+  --mono: "Courier Prime", ui-monospace, "Courier New", monospace;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --col-w: 320px;
 }
@@ -29,46 +30,36 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--sans);
+  font-family: var(--type);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: clamp(2.2rem, 6vw, 4.5rem) clamp(1.2rem, 5vw, 3rem) 5rem;
+  padding: clamp(2.4rem, 6vw, 4.5rem) clamp(1.2rem, 5vw, 3rem) 6rem;
 }
 
-.masthead,
+/* a single grained sheet behind everything (the paper itself) */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.3;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
 .composer,
 .boards,
-.wall,
-.sandbox-note {
+.wall {
   max-width: 1040px;
   margin-inline: auto;
 }
 
-/* ---- masthead ---- */
-.masthead {
-  margin-bottom: 2.4rem;
-}
-.wordmark {
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: clamp(2rem, 5vw, 2.9rem);
-  letter-spacing: -0.01em;
-  margin: 0;
-  line-height: 1;
-}
-.tagline {
-  font-family: var(--serif);
-  font-style: italic;
-  color: var(--muted);
-  margin: 0.5rem 0 0;
-  font-size: 1.05rem;
-}
-
-/* ---- composer: writing on paper, not in a box ---- */
+/* ---- composer: a fresh line on the platen ---- */
 .composer {
-  margin-bottom: 2.2rem;
+  margin-bottom: 2.4rem;
   border-bottom: 1px solid var(--line);
   padding-bottom: 1rem;
 }
@@ -80,21 +71,22 @@ body {
   resize: none;
   background: transparent;
   color: var(--ink);
-  font-family: var(--serif);
-  font-size: clamp(1.3rem, 2.4vw, 1.6rem);
-  line-height: 1.4;
+  caret-color: var(--ink);
+  font-family: var(--type);
+  font-size: clamp(1.2rem, 2.4vw, 1.5rem);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
   padding: 0;
   overflow: hidden;
 }
 .compose-quote::placeholder {
   color: var(--faint);
-  font-style: italic;
 }
 .compose-foot {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-top: 0.8rem;
+  margin-top: 0.85rem;
 }
 .compose-author {
   flex: 1;
@@ -102,10 +94,10 @@ body {
   border: 0;
   outline: 0;
   background: transparent;
-  color: var(--ink);
-  font-family: var(--sans);
-  font-size: 0.92rem;
-  letter-spacing: 0.01em;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  letter-spacing: 0.02em;
   padding: 0;
 }
 .compose-author::placeholder {
@@ -113,23 +105,22 @@ body {
 }
 .keep {
   flex: none;
-  font-family: var(--sans);
-  font-size: 0.8rem;
-  letter-spacing: 0.12em;
-  text-transform: lowercase;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: var(--paper);
   background: var(--ink);
   border: 0;
-  border-radius: 999px;
-  padding: 0.5rem 1.15rem;
+  padding: 0.5rem 1.1rem;
   cursor: pointer;
-  transition: opacity 0.2s var(--ease), transform 0.1s var(--ease);
+  transition: opacity 0.2s var(--ease), transform 0.08s var(--ease);
 }
 .keep:hover {
   opacity: 0.85;
 }
 .keep:active {
-  transform: scale(0.97);
+  transform: translateY(1px);
 }
 .keep:disabled {
   background: transparent;
@@ -137,29 +128,28 @@ body {
   cursor: default;
 }
 
-/* ---- boards / filter row ---- */
+/* ---- boards / filter ---- */
 .boards {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.3rem 1.3rem;
-  margin-bottom: 2.4rem;
-  font-size: 0.92rem;
+  gap: 0.3rem 1.4rem;
+  margin-bottom: 2.6rem;
+  font-family: var(--mono);
+  font-size: 0.9rem;
 }
 .tab {
-  font-family: var(--sans);
+  font: inherit;
   color: var(--muted);
   background: none;
   border: 0;
   padding: 0.15rem 0;
   cursor: pointer;
   position: relative;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   transition: color 0.18s var(--ease);
 }
-.tab:hover {
-  color: var(--ink);
-}
+.tab:hover,
 .tab[aria-current="true"] {
   color: var(--ink);
 }
@@ -175,8 +165,8 @@ body {
 .tab-count {
   color: var(--faint);
   font-variant-numeric: tabular-nums;
-  margin-left: 0.3rem;
-  font-size: 0.82em;
+  margin-left: 0.35rem;
+  font-size: 0.85em;
 }
 .tab-new {
   color: var(--faint);
@@ -186,7 +176,7 @@ body {
 }
 .board-input {
   font: inherit;
-  font-family: var(--sans);
+  font-family: var(--mono);
   border: 0;
   border-bottom: 1px solid var(--line-2);
   outline: 0;
@@ -196,49 +186,59 @@ body {
   color: var(--ink);
 }
 
-/* ---- the wall (masonry via columns) ---- */
+/* ---- the wall: a stack of typed slips (masonry) ---- */
 .wall {
   column-width: var(--col-w);
-  column-gap: 1.1rem;
+  column-gap: 1.2rem;
 }
 .card {
   break-inside: avoid;
-  margin: 0 0 1.1rem;
-  padding: 1.4rem 1.4rem 1rem;
-  border-radius: 10px;
+  margin: 0 0 1.25rem;
+  padding: 1.3rem 1.4rem 1rem;
+  border-radius: 2px;
   background: transparent;
   border: 1px solid transparent;
-  transition: background 0.22s var(--ease), box-shadow 0.22s var(--ease),
-    border-color 0.22s var(--ease), transform 0.22s var(--ease);
+  transition: background 0.22s var(--ease), border-color 0.22s var(--ease),
+    box-shadow 0.22s var(--ease);
 }
 .card:hover {
   background: var(--paper-2);
   border-color: var(--line);
-  box-shadow: var(--shadow);
+  box-shadow: 0 1px 0 rgba(42, 38, 32, 0.04), 0 10px 26px rgba(42, 38, 32, 0.07);
 }
 .q {
-  font-family: var(--serif);
-  font-size: 1.28rem;
-  line-height: 1.42;
+  font-family: var(--type);
+  font-size: 1.18rem;
+  line-height: 1.5;
   margin: 0;
   color: var(--ink);
-  /* a hairline of refinement: tighten widows */
+  hanging-punctuation: first last;
   text-wrap: pretty;
+  /* each slip is typed a hair off-true, with its own ink density */
+  transform: rotate(var(--rot, 0deg));
+  opacity: var(--ink-density, 1);
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease), text-shadow 0.2s var(--ease);
+}
+/* on focus the slip presses clean: straightens, fully inks, a hair of double-strike */
+.card:hover .q,
+.card:focus-within .q {
+  opacity: 1;
+  transform: rotate(0deg);
+  text-shadow: 0.3px 0 0 currentColor;
 }
 .card-foot {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: 0.9rem;
-  min-height: 1.1rem;
+  margin-top: 0.85rem;
+  min-height: 1rem;
 }
 .author {
-  font-family: var(--sans);
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
   color: var(--muted);
-  font-style: normal;
 }
 .acts {
   display: inline-flex;
@@ -253,9 +253,9 @@ body {
   transform: none;
 }
 .act {
-  font-family: var(--sans);
-  font-size: 0.74rem;
-  letter-spacing: 0.05em;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
   color: var(--muted);
   background: none;
   border: 0;
@@ -267,22 +267,22 @@ body {
   color: var(--ink);
 }
 .act-del:hover {
-  color: #a5402f;
+  color: #9c3a2a;
 }
 .act.is-on {
   color: var(--ink);
 }
 
-/* gentle entrance for freshly kept maxims */
+/* freshly kept slips roll up onto the platen */
 @media (prefers-reduced-motion: no-preference) {
   .card.enter {
-    animation: rise 0.4s var(--ease) both;
+    animation: roll 0.45s var(--ease) both;
   }
 }
-@keyframes rise {
+@keyframes roll {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -292,11 +292,10 @@ body {
 
 /* ---- empty state ---- */
 .empty {
-  font-family: var(--serif);
-  font-style: italic;
+  font-family: var(--type);
   color: var(--muted);
-  font-size: 1.15rem;
-  padding: 2rem 0;
+  font-size: 1.05rem;
+  padding: 1.5rem 0;
 }
 
 /* ---- board popover ---- */
@@ -305,11 +304,11 @@ body {
   z-index: 50;
   min-width: 12.5rem;
   background: var(--paper-2);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
+  border: 1px solid var(--line-2);
+  border-radius: 3px;
+  box-shadow: 0 12px 30px rgba(42, 38, 32, 0.14);
   padding: 0.5rem;
-  font-family: var(--sans);
+  font-family: var(--mono);
 }
 .po-row {
   display: flex;
@@ -320,13 +319,13 @@ body {
   background: none;
   border: 0;
   padding: 0.5rem 0.6rem;
-  border-radius: 7px;
+  border-radius: 2px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--ink);
 }
 .po-row:hover {
-  background: rgba(28, 26, 22, 0.05);
+  background: rgba(42, 38, 32, 0.06);
 }
 .po-check {
   width: 1rem;
@@ -354,7 +353,7 @@ body {
   outline: 0;
   background: transparent;
   font: inherit;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   color: var(--ink);
   padding: 0.15rem 0;
 }
@@ -362,16 +361,33 @@ body {
   color: var(--faint);
 }
 
-/* ---- footer note ---- */
-.sandbox-note {
-  margin-top: 3.5rem;
-  text-align: center;
-  color: var(--faint);
-  font-size: 0.82rem;
-  letter-spacing: 0.02em;
+::selection {
+  background: rgba(42, 38, 32, 0.16);
 }
 
-/* selection */
-::selection {
-  background: rgba(28, 26, 22, 0.12);
+/* ---- print: the board as a clean typed page ---- */
+@media print {
+  .composer,
+  .boards,
+  .grain,
+  .acts,
+  .popover {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    padding: 0;
+  }
+  .wall {
+    column-width: auto;
+    column-count: 2;
+  }
+  .card {
+    break-inside: avoid;
+    border: 0;
+  }
+  .q {
+    transform: none;
+    opacity: 1;
+  }
 }

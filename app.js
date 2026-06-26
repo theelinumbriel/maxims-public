@@ -17,6 +17,16 @@ const SEED = [
 const uid = () =>
   (crypto.randomUUID && crypto.randomUUID()) || "id-" + Math.random().toString(36).slice(2);
 
+// stable per-id hash, so each slip's tiny rotation + ink density never changes
+function hashStr(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
 /** @type {{quotes:Quote[],boards:Board[]}} */
 let state = load();
 let active = "all"; // "all" | boardId
@@ -165,7 +175,14 @@ function renderWall(enterId) {
   for (const q of items) {
     const node = tpl.content.firstElementChild.cloneNode(true);
     node.dataset.id = q.id;
-    node.querySelector(".q").textContent = q.text;
+    const qEl = node.querySelector(".q");
+    qEl.textContent = q.text;
+    // each slip typed a hair off-true, with its own ink density (stable per id)
+    const h = hashStr(q.id);
+    const rot = (((h % 1000) / 1000) - 0.5) * 0.9; // ±0.45deg
+    const ink = 0.9 + ((h >> 5) % 100) / 1000; // 0.900–0.999
+    qEl.style.setProperty("--rot", rot.toFixed(3) + "deg");
+    qEl.style.setProperty("--ink-density", ink.toFixed(3));
     const auth = node.querySelector(".author");
     auth.textContent = q.author ? "— " + q.author : "";
     if (enterId && q.id === enterId) node.classList.add("enter");
@@ -292,6 +309,11 @@ document.addEventListener("click", (e) => {
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closePopover();
+  // "/" jumps to the composer (unless you're already typing somewhere)
+  if (e.key === "/" && !/^(input|textarea)$/i.test((document.activeElement || {}).tagName || "")) {
+    e.preventDefault();
+    quoteEl.focus();
+  }
 });
 window.addEventListener("resize", closePopover);
 

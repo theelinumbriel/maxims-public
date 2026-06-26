@@ -5,24 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>maxims</title>
     <meta name="description" content="a quiet place for the words you want to keep — pinterest, but for words." />
-    <meta name="theme-color" content="#fbfaf7" />
+    <meta name="theme-color" content="#f4f0e6" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header class="masthead">
-      <div class="title-wrap">
-        <h1 class="wordmark">maxims</h1>
-        <p class="tagline">a quiet place for the words you want to keep.</p>
-      </div>
-    </header>
+    <!-- grain overlay (a single fixed sheet of paper) -->
+    <div class="grain" aria-hidden="true"></div>
 
     <!-- compose -->
     <section class="composer" aria-label="add a maxim">
@@ -32,6 +28,7 @@
         rows="1"
         placeholder="write or paste a maxim…"
         autocomplete="off"
+        spellcheck="false"
       ></textarea>
       <div class="compose-foot">
         <input id="author" class="compose-author" placeholder="— who said it (optional)" autocomplete="off" />
@@ -44,8 +41,6 @@
 
     <!-- the wall -->
     <main id="wall" class="wall" aria-live="polite"></main>
-
-    <p class="sandbox-note">a sandbox — no account, nothing sent anywhere. everything stays in this browser.</p>
 
     <!-- board popover (single, reused) -->
     <div class="popover" id="popover" hidden role="menu" aria-label="save to a board"></div>
