@@ -1,19 +1,19 @@
-/* maxims — a typed commonplace book.
+/* maxims — a quiet commonplace book.
    no titles, no chrome: you arrive straight at the page and start typing.
-   everything is set in a worn typewriter face on grained paper; the wall reads
-   like a stack of individually typed slips. restraint over decoration. */
+   plain monospace on a plain white page; everything is set at one size. */
 
 :root {
-  --paper: #f4f0e6;
-  --paper-2: #fbf9f2;
-  --ink: #2a2620;
-  --ink-soft: rgba(42, 38, 32, 0.62);
-  --muted: #8d8676;
-  --faint: #b6af9f;
-  --line: rgba(42, 38, 32, 0.16);
-  --line-2: rgba(42, 38, 32, 0.28);
-  --type: "Special Elite", "Courier Prime", "Courier New", monospace;
+  --paper: #fff;
+  --paper-2: #f6f6f6;
+  --ink: #222;
+  --ink-soft: rgba(34, 34, 34, 0.62);
+  --muted: #777;
+  --faint: #aaa;
+  --line: rgba(0, 0, 0, 0.14);
+  --line-2: rgba(0, 0, 0, 0.26);
+  --type: "Courier Prime", ui-monospace, "Courier New", monospace;
   --mono: "Courier Prime", ui-monospace, "Courier New", monospace;
+  --fs: 1rem;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --col-w: 320px;
 }
@@ -30,24 +30,12 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--type);
-  font-size: 16px;
+  font-family: var(--mono);
+  font-size: var(--fs);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding: clamp(2.4rem, 6vw, 4.5rem) clamp(1.2rem, 5vw, 3rem) 6rem;
-}
-
-/* a single grained sheet behind everything (the paper itself) */
-.grain {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.3;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 180px 180px;
 }
 
 .composer,
@@ -57,7 +45,7 @@ body {
   margin-inline: auto;
 }
 
-/* ---- composer: a fresh line on the platen ---- */
+/* ---- composer ---- */
 .composer {
   margin-bottom: 2.4rem;
   border-bottom: 1px solid var(--line);
@@ -72,8 +60,8 @@ body {
   background: transparent;
   color: var(--ink);
   caret-color: var(--ink);
-  font-family: var(--type);
-  font-size: clamp(1.2rem, 2.4vw, 1.5rem);
+  font-family: var(--mono);
+  font-size: var(--fs);
   line-height: 1.5;
   letter-spacing: 0.01em;
   padding: 0;
@@ -96,7 +84,7 @@ body {
   background: transparent;
   color: var(--ink-soft);
   font-family: var(--mono);
-  font-size: 0.86rem;
+  font-size: var(--fs);
   letter-spacing: 0.02em;
   padding: 0;
 }
@@ -106,7 +94,7 @@ body {
 .keep {
   flex: none;
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: var(--fs);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--paper);
@@ -136,7 +124,7 @@ body {
   gap: 0.3rem 1.4rem;
   margin-bottom: 2.6rem;
   font-family: var(--mono);
-  font-size: 0.9rem;
+  font-size: var(--fs);
 }
 .tab {
   font: inherit;
@@ -166,7 +154,7 @@ body {
   color: var(--faint);
   font-variant-numeric: tabular-nums;
   margin-left: 0.35rem;
-  font-size: 0.85em;
+  font-size: 1em;
 }
 .tab-new {
   color: var(--faint);
@@ -186,7 +174,7 @@ body {
   color: var(--ink);
 }
 
-/* ---- the wall: a stack of typed slips (masonry) ---- */
+/* ---- the wall (masonry) ---- */
 .wall {
   column-width: var(--col-w);
   column-gap: 1.2rem;
@@ -204,27 +192,16 @@ body {
 .card:hover {
   background: var(--paper-2);
   border-color: var(--line);
-  box-shadow: 0 1px 0 rgba(42, 38, 32, 0.04), 0 10px 26px rgba(42, 38, 32, 0.07);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03), 0 10px 26px rgba(0, 0, 0, 0.06);
 }
 .q {
-  font-family: var(--type);
-  font-size: 1.18rem;
+  font-family: var(--mono);
+  font-size: var(--fs);
   line-height: 1.5;
   margin: 0;
   color: var(--ink);
   hanging-punctuation: first last;
   text-wrap: pretty;
-  /* each slip is typed a hair off-true, with its own ink density */
-  transform: rotate(var(--rot, 0deg));
-  opacity: var(--ink-density, 1);
-  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease), text-shadow 0.2s var(--ease);
-}
-/* on focus the slip presses clean: straightens, fully inks, a hair of double-strike */
-.card:hover .q,
-.card:focus-within .q {
-  opacity: 1;
-  transform: rotate(0deg);
-  text-shadow: 0.3px 0 0 currentColor;
 }
 .card-foot {
   display: flex;
@@ -236,7 +213,7 @@ body {
 }
 .author {
   font-family: var(--mono);
-  font-size: 0.76rem;
+  font-size: var(--fs);
   letter-spacing: 0.06em;
   color: var(--muted);
 }
@@ -254,7 +231,7 @@ body {
 }
 .act {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: var(--fs);
   letter-spacing: 0.06em;
   color: var(--muted);
   background: none;
@@ -273,7 +250,7 @@ body {
   color: var(--ink);
 }
 
-/* freshly kept slips roll up onto the platen */
+/* freshly kept slips ease in */
 @media (prefers-reduced-motion: no-preference) {
   .card.enter {
     animation: roll 0.45s var(--ease) both;
@@ -292,9 +269,9 @@ body {
 
 /* ---- empty state ---- */
 .empty {
-  font-family: var(--type);
+  font-family: var(--mono);
   color: var(--muted);
-  font-size: 1.05rem;
+  font-size: var(--fs);
   padding: 1.5rem 0;
 }
 
@@ -306,7 +283,7 @@ body {
   background: var(--paper-2);
   border: 1px solid var(--line-2);
   border-radius: 3px;
-  box-shadow: 0 12px 30px rgba(42, 38, 32, 0.14);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
   padding: 0.5rem;
   font-family: var(--mono);
 }
@@ -321,11 +298,11 @@ body {
   padding: 0.5rem 0.6rem;
   border-radius: 2px;
   cursor: pointer;
-  font-size: 0.88rem;
+  font-size: var(--fs);
   color: var(--ink);
 }
 .po-row:hover {
-  background: rgba(42, 38, 32, 0.06);
+  background: rgba(0, 0, 0, 0.06);
 }
 .po-check {
   width: 1rem;
@@ -353,7 +330,7 @@ body {
   outline: 0;
   background: transparent;
   font: inherit;
-  font-size: 0.86rem;
+  font-size: var(--fs);
   color: var(--ink);
   padding: 0.15rem 0;
 }
@@ -362,14 +339,13 @@ body {
 }
 
 ::selection {
-  background: rgba(42, 38, 32, 0.16);
+  background: rgba(0, 0, 0, 0.14);
 }
 
-/* ---- print: the board as a clean typed page ---- */
+/* ---- print: a clean typed page ---- */
 @media print {
   .composer,
   .boards,
-  .grain,
   .acts,
   .popover {
     display: none !important;
@@ -385,9 +361,5 @@ body {
   .card {
     break-inside: avoid;
     border: 0;
-  }
-  .q {
-    transform: none;
-    opacity: 1;
   }
 }
