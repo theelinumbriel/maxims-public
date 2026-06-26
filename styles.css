@@ -1,6 +1,7 @@
 /* maxims — a quiet commonplace book.
    no titles, no chrome: you arrive straight at the page and start typing.
-   plain monospace on a plain white page; everything is set at one size. */
+   set in Garamond on a plain white page; the quote at reading size, all the
+   chrome (author, actions, keep, boards) at one smaller, consistent size. */
 
 :root {
   --paper: #fff;
@@ -11,9 +12,10 @@
   --faint: #aaa;
   --line: rgba(0, 0, 0, 0.14);
   --line-2: rgba(0, 0, 0, 0.26);
-  --type: "Courier Prime", ui-monospace, "Courier New", monospace;
-  --mono: "Courier Prime", ui-monospace, "Courier New", monospace;
+  --type: "EB Garamond", Garamond, Georgia, "Times New Roman", serif;
+  --mono: "EB Garamond", Garamond, Georgia, "Times New Roman", serif;
   --fs: 1rem;
+  --fs-sm: 0.82rem;   /* author size — also used for actions, keep, boards, popover */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --col-w: 320px;
 }
@@ -84,7 +86,7 @@ body {
   background: transparent;
   color: var(--ink-soft);
   font-family: var(--mono);
-  font-size: var(--fs);
+  font-size: var(--fs-sm);
   letter-spacing: 0.02em;
   padding: 0;
 }
@@ -94,9 +96,8 @@ body {
 .keep {
   flex: none;
   font-family: var(--mono);
-  font-size: var(--fs);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.04em;
   color: var(--paper);
   background: var(--ink);
   border: 0;
@@ -124,7 +125,7 @@ body {
   gap: 0.3rem 1.4rem;
   margin-bottom: 2.6rem;
   font-family: var(--mono);
-  font-size: var(--fs);
+  font-size: var(--fs-sm);
 }
 .tab {
   font: inherit;
@@ -213,7 +214,7 @@ body {
 }
 .author {
   font-family: var(--mono);
-  font-size: var(--fs);
+  font-size: var(--fs-sm);
   letter-spacing: 0.06em;
   color: var(--muted);
 }
@@ -231,7 +232,7 @@ body {
 }
 .act {
   font-family: var(--mono);
-  font-size: var(--fs);
+  font-size: var(--fs-sm);
   letter-spacing: 0.06em;
   color: var(--muted);
   background: none;
@@ -298,7 +299,7 @@ body {
   padding: 0.5rem 0.6rem;
   border-radius: 2px;
   cursor: pointer;
-  font-size: var(--fs);
+  font-size: var(--fs-sm);
   color: var(--ink);
 }
 .po-row:hover {
@@ -330,7 +331,7 @@ body {
   outline: 0;
   background: transparent;
   font: inherit;
-  font-size: var(--fs);
+  font-size: var(--fs-sm);
   color: var(--ink);
   padding: 0.15rem 0;
 }
