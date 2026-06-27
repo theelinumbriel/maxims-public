@@ -1,4 +1,4 @@
-// maxims — a local, account-free sandbox for collecting words.
+// maxims -- a local, account-free sandbox for collecting words.
 // state lives in localStorage; no network, no backend.
 
 const KEY = "maxims.v1";
@@ -6,38 +6,21 @@ const KEY = "maxims.v1";
 /** @typedef {{id:string,text:string,author:string,boards:string[],createdAt:number}} Quote */
 /** @typedef {{id:string,name:string}} Board */
 
-const SEED = [
-  { text: "The unexamined life is not worth living.", author: "Socrates" },
-  { text: "The limits of my language mean the limits of my world.", author: "Ludwig Wittgenstein" },
-  { text: "We suffer more often in imagination than in reality.", author: "Seneca" },
-  { text: "From the sublime to the ridiculous is but a step.", author: "Napoleon Bonaparte" },
-  { text: "What is rational is actual; and what is actual is rational.", author: "Hegel" },
-];
-
 const uid = () =>
   (crypto.randomUUID && crypto.randomUUID()) || "id-" + Math.random().toString(36).slice(2);
 
 /** @type {{quotes:Quote[],boards:Board[]}} */
 let state = load();
 let active = "all"; // "all" | boardId
+let dragId = null; // id of the maxim currently being dragged onto a board
 
 function load() {
   try {
     const raw = localStorage.getItem(KEY);
     if (raw) return JSON.parse(raw);
   } catch {}
-  // first run: seed a few, newest-last so order reads naturally
-  const now = Date.now();
-  return {
-    quotes: SEED.map((s, i) => ({
-      id: uid(),
-      text: s.text,
-      author: s.author,
-      boards: [],
-      createdAt: now - (SEED.length - i) * 1000,
-    })),
-    boards: [],
-  };
+  // first run: a blank page -- you arrive and start typing
+  return { quotes: [], boards: [] };
 }
 
 function save() {
@@ -109,6 +92,29 @@ function renderBoards() {
       active = id;
       render();
     });
+    // a real board (not "all") accepts a maxim dragged onto it: the maxim
+    // joins this board and still lives in "all".
+    if (id !== "all") {
+      b.addEventListener("dragover", (e) => {
+        if (!dragId) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "copy";
+        b.classList.add("drop-target");
+      });
+      b.addEventListener("dragleave", () => b.classList.remove("drop-target"));
+      b.addEventListener("drop", (e) => {
+        e.preventDefault();
+        b.classList.remove("drop-target");
+        const q = state.quotes.find((x) => x.id === dragId);
+        dragId = null;
+        if (!q) return;
+        if (!q.boards.includes(id)) {
+          q.boards.push(id);
+          save();
+        }
+        render();
+      });
+    }
     return b;
   };
   boardsNav.append(mk("all", "all", state.quotes.length));
@@ -149,6 +155,14 @@ function startNewBoard(anchorBtn) {
   input.addEventListener("blur", commit);
 }
 
+// responsive column count for the masonry
+function colCount() {
+  const w = wall.clientWidth || window.innerWidth || 1040;
+  if (w < 560) return 1;
+  if (w < 900) return 2;
+  return 3;
+}
+
 function renderWall(enterId) {
   wall.innerHTML = "";
   const items = visibleQuotes();
@@ -157,20 +171,108 @@ function renderWall(enterId) {
     p.className = "empty";
     p.textContent =
       active === "all"
-        ? "nothing yet — keep your first maxim above."
+        ? "nothing yet -- keep your first maxim above."
         : "this board is empty. keep something here, or save an existing maxim to it.";
     wall.append(p);
     return;
   }
-  for (const q of items) {
+  // explicit equal columns (flex), so every column starts at the same top Y;
+  // cards fill round-robin across the top row, then down.
+  const n = colCount();
+  const cols = [];
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement("div");
+    c.className = "col";
+    wall.append(c);
+    cols.push(c);
+  }
+  let enterNode = null;
+  items.forEach((q, i) => {
     const node = tpl.content.firstElementChild.cloneNode(true);
     node.dataset.id = q.id;
     const qEl = node.querySelector(".q");
-    qEl.textContent = q.text;
-    const auth = node.querySelector(".author");
-    auth.textContent = q.author || "";
-    if (enterId && q.id === enterId) node.classList.add("enter");
-    wall.append(node);
+    if (enterId && q.id === enterId) {
+      // split into words so each can be revealed in turn; pre-hide
+      // synchronously so there's no flash before the animation runs.
+      fillWords(qEl, q.text);
+      node.style.opacity = "0";
+      qEl.querySelectorAll(".w").forEach((s) => (s.style.opacity = "0"));
+      enterNode = node;
+    } else {
+      qEl.textContent = q.text;
+    }
+    node.querySelector(".author").textContent = q.author || "";
+    cols[i % n].append(node);
+  });
+  if (enterNode) enhanceEnter(enterNode);
+}
+
+// break text into inline-block word spans (whitespace kept as text nodes so
+// the line still wraps naturally between words)
+function fillWords(el, text) {
+  el.textContent = "";
+  for (const chunk of text.split(/(\s+)/)) {
+    if (!chunk) continue;
+    if (/^\s+$/.test(chunk)) {
+      el.append(document.createTextNode(chunk));
+    } else {
+      const s = document.createElement("span");
+      s.className = "w";
+      s.textContent = chunk;
+      el.append(s);
+    }
+  }
+}
+
+const reduceMotion = () =>
+  window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Motion One (motion.dev) -- a tiny spring/stagger engine, loaded lazily from a
+// CDN. If it can't load we fall back to the plain CSS roll, so the page never
+// depends on it.
+let _motion;
+function loadMotion() {
+  if (_motion === undefined) {
+    _motion = import("https://esm.sh/motion@11").catch(() => null);
+  }
+  return _motion;
+}
+
+function clearReveal(card) {
+  card.style.opacity = "";
+  card.querySelectorAll(".q .w").forEach((s) => (s.style.opacity = ""));
+}
+
+// the signature: a freshly kept maxim settles onto the page while its words
+// rise out of a soft blur, one after another, like ink finding the paper.
+async function enhanceEnter(card) {
+  if (reduceMotion()) return clearReveal(card);
+  const m = await loadMotion();
+  if (!m || !m.animate) {
+    clearReveal(card);
+    card.classList.add("enter");
+    return;
+  }
+  const { animate, stagger } = m;
+  const words = card.querySelectorAll(".q .w");
+  const author = card.querySelector(".author");
+
+  animate(
+    card,
+    { opacity: [0, 1], y: [10, 0], scale: [0.992, 1] },
+    { duration: 0.55, ease: [0.22, 1, 0.36, 1] }
+  );
+  animate(
+    words,
+    { opacity: [0, 1], y: [9, 0], filter: ["blur(7px)", "blur(0px)"] },
+    { delay: stagger(0.035), type: "spring", stiffness: 380, damping: 30 }
+  );
+  if (author && author.textContent) {
+    animate(
+      author,
+      { opacity: [0, 1], y: [4, 0] },
+      { duration: 0.5, delay: 0.12 + words.length * 0.035, ease: [0.22, 1, 0.36, 1] }
+    );
   }
 }
 
@@ -178,6 +280,23 @@ function render(enterId) {
   renderBoards();
   renderWall(enterId);
 }
+
+// ---- drag a maxim onto a board ----
+wall.addEventListener("dragstart", (e) => {
+  const card = e.target.closest(".card");
+  if (!card) return;
+  dragId = card.dataset.id;
+  card.classList.add("dragging");
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = "copy";
+    e.dataTransfer.setData("text/plain", dragId);
+  }
+});
+wall.addEventListener("dragend", (e) => {
+  e.target.closest(".card")?.classList.remove("dragging");
+  dragId = null;
+  document.querySelectorAll(".tab.drop-target").forEach((t) => t.classList.remove("drop-target"));
+});
 
 // ---- card actions (event delegation) ----
 wall.addEventListener("click", (e) => {
@@ -224,7 +343,7 @@ function openPopover(q, anchor) {
       hint.className = "po-row";
       hint.style.color = "var(--muted)";
       hint.style.cursor = "default";
-      hint.textContent = "no boards yet — make one:";
+      hint.textContent = "no boards yet -- make one:";
       popover.append(hint);
     }
     for (const bd of state.boards) {
@@ -305,6 +424,17 @@ function escapeHtml(s) {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
+// re-flow the columns when the responsive column count changes
+let _cols = colCount();
+window.addEventListener("resize", () => {
+  const n = colCount();
+  if (n !== _cols) {
+    _cols = n;
+    renderWall();
+  }
+});
+
 // ---- go ----
+loadMotion(); // warm the animation engine so the first "keep" is already smooth
 autogrow();
 render();

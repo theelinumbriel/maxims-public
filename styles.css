@@ -1,4 +1,4 @@
-/* maxims — a quiet commonplace book.
+/* maxims -- a quiet commonplace book.
    no titles, no chrome: you arrive straight at the page and start typing.
    set in Garamond on a plain white page; the quote at reading size, all the
    chrome (author, actions, keep, boards) at one smaller, consistent size. */
@@ -15,7 +15,7 @@
   --type: "EB Garamond", Garamond, Georgia, "Times New Roman", serif;
   --mono: "EB Garamond", Garamond, Georgia, "Times New Roman", serif;
   --fs: 1rem;
-  --fs-sm: 0.82rem;   /* author size — also used for actions, keep, boards, popover */
+  --fs-sm: 0.82rem;   /* author size -- also used for actions, keep, boards, popover */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --col-w: 320px;
 }
@@ -177,23 +177,47 @@ body {
 
 /* ---- the wall (masonry) ---- */
 .wall {
-  column-width: var(--col-w);
-  column-gap: 1.2rem;
+  display: flex;
+  align-items: flex-start; /* every column starts at the same top Y */
+  gap: 1.2rem;
+}
+.col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 .card {
-  break-inside: avoid;
-  margin: 0 0 1.25rem;
+  margin: 0;
   padding: 1.3rem 1.4rem 1rem;
   border-radius: 2px;
   background: transparent;
   border: 1px solid transparent;
-  transition: background 0.22s var(--ease), border-color 0.22s var(--ease),
-    box-shadow 0.22s var(--ease);
+  transition: background 0.22s var(--ease), border-color 0.22s var(--ease);
 }
 .card:hover {
   background: var(--paper-2);
-  border-color: var(--line);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03), 0 10px 26px rgba(0, 0, 0, 0.06);
+  border-color: var(--line-2);
+}
+.card[draggable="true"] {
+  cursor: grab;
+}
+.card.dragging {
+  opacity: 0.45;
+}
+/* a board tab lights up while you drag a maxim over it */
+.tab.drop-target {
+  color: var(--ink);
+}
+.tab.drop-target::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: var(--ink);
 }
 .q {
   font-family: var(--mono);
@@ -203,6 +227,11 @@ body {
   color: var(--ink);
   hanging-punctuation: first last;
   text-wrap: pretty;
+}
+/* each word of a freshly kept maxim is its own box so it can rise on its own */
+.q .w {
+  display: inline-block;
+  will-change: transform, opacity, filter;
 }
 .card-foot {
   display: flex;
